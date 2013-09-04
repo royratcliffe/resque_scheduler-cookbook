@@ -1,0 +1,15 @@
+Bluepill.application('resque_scheduler') do |app|
+  app.working_dir = '/app/resque_scheduler/current'
+  app.process('resque_scheduler') do |process|
+    process.start_command = 'bundle exec rake resque:scheduler'
+    process.environment = {
+      <% if @redis_url %>
+      'REDIS_URL' => '<%= @redis_url %>'
+      <% end %>
+    }
+
+    # Bluepill assumes that the process will daemonize itself. Rake will
+    # not. Instead, ask Bluepill to daemonize it for us.
+    process.daemonize = true
+  end
+end
